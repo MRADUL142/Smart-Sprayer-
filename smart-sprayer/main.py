@@ -39,8 +39,12 @@ logger.info("CORS middleware configured")
 # Get the directory where this script is located
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Create static directory if it doesn't exist
+static_dir = os.path.join(BASE_DIR, "static")
+os.makedirs(static_dir, exist_ok=True)
+
 # Mount static files
-app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Templates
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "app/templates"))
@@ -54,10 +58,10 @@ logger.info("Routers configured")
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.on_event("startup")
-async def startup_event():
-    logger.info("🚀 Smart Sprayer API starting...")
-    logger.info(f"📍 BASE_DIR: {BASE_DIR}")
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for deployment services"""
+    return {"status": "ok", "message": "Smart Sprayer API is running"}
 
 if __name__ == "__main__":
     logger.info("Starting FastAPI server...")
