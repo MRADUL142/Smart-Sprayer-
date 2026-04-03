@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Sprayer - Plant Disease Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .upload-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 40px;
+            margin: 20px 0;
+            transition: border-color 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #2980b9;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .recommendations {
+            margin-top: 20px;
+        }
+        .recommendations ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .recommendations li {
+            background-color: #f8f9fa;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌱 Smart Sprayer</h1>
+        <p>Upload a photo of your plant to detect diseases and get pesticide recommendations.</p>
+
+        <div class="upload-section">
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="upload-area" id="uploadArea">
+                    <p>Drag and drop an image here or click to select</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    <button type="button" class="btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
+                </div>
+                <button type="submit" class="btn">Analyze Plant</button>
+            </form>
+        </div>
+
+        <div id="result" class="result">
+            <h3>Analysis Result:</h3>
+            <p id="diseaseInfo"></p>
+            <div class="recommendations">
+                <h4>Recommended Pesticides:</h4>
+                <ul id="recommendationsList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadForm = document.getElementById('uploadForm');
+        const resultDiv = document.getElementById('result');
+        const diseaseInfo = document.getElementById('diseaseInfo');
+        const recommendationsList = document.getElementById('recommendationsList');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#2980b9';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#3498db';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#3498db';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateUploadArea(files[0].name);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                updateUploadArea(e.target.files[0].name);
+            }
+        });
+
+        function updateUploadArea(filename) {
+            uploadArea.innerHTML = `<p>Selected: ${filename}</p><button type="button" class="btn" onclick="document.getElementById('fileInput').click()">Change File</button>`;
+        }
+
+        // Form submission
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!fileInput.files[0]) {
+                alert('Please select an image file first.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/api/detect-disease', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    diseaseInfo.textContent = `${result.disease_name} (Confidence: ${(result.confidence * 100).toFixed(1)}%) - ${result.description}`;
+                    recommendationsList.innerHTML = result.recommendations.map(rec => `<li>${rec}</li>`).join('');
+                    resultDiv.className = 'result success';
+                } else {
+                    diseaseInfo.textContent = result.detail || 'Error analyzing image';
+                    recommendationsList.innerHTML = '';
+                    resultDiv.className = 'result error';
+                }
+
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                diseaseInfo.textContent = 'Network error. Please try again.';
+                recommendationsList.innerHTML = '';
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
