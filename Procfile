@@ -1,1 +1,1 @@
-web: sh -c 'cd smart-sprayer && python seed.py && python main.py'
+web: bash start.sh

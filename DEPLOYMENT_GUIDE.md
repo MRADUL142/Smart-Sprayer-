@@ -46,24 +46,29 @@ Fill in EXACTLY as shown:
 
 ```
 Name:                   smart-sprayer-api
-Environment:            Python 3.11          ← MANUALLY SELECT (Override Node.js!)
+Environment:            Python 3          ← MANUALLY SELECT THIS DROPDOWN
 Region:                 Oregon (or nearest)
 Branch:                 main
-Root Directory:         smart-sprayer
-Build Command:          pip install -r requirements.txt && python seed.py
-Start Command:          python main.py
+Root Directory:         (leave blank)
+Build Command:          pip install -r requirements.txt
+Start Command:          bash start.sh
 ```
 
-**IMPORTANT**: The `Environment` dropdown should say **"Python 3.11"** NOT Node.js!
+**CRITICAL**: 
+- Make sure Environment dropdown explicitly says **"Python"** (NOT Node.js)
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `bash start.sh` (this runs the startup script)
 
 #### Step 4: Review & Deploy
 
-1. Click **"Create Web Service"**
+1. Scroll down and click **"Create Web Service"**
 2. Render starts building
 3. Watch **Logs** tab for:
    ```
-   pip install -r requirements.txt     ← Installing Python packages
-   Database seeded successfully!        ← Database created
+   Building Docker image...
+   Step 1/5 : FROM...
+   pip install -r requirements.txt     ← Installing packages
+   Database seeded successfully!        ← DB created
    INFO:     Uvicorn running on         ← Server started ✅
    ```
 
@@ -82,6 +87,20 @@ Start Command:          python main.py
 ```bash
 git push heroku main
 ```
+
+---
+
+## 📝 Configuration Files Explained
+
+These files help deployment platforms understand your app:
+
+| File | Purpose |
+|------|---------|
+| **Procfile** | Tells Heroku/Render how to start the app (`bash start.sh`) |
+| **start.sh** | Shell script that seeds the database and starts backend |
+| **runtime.txt** | Specifies Python 3.11 (forces Python over Node.js detection) |
+| **requirements.txt** | Python package dependencies (at root for easy detection) |
+| **.renderignore** | Tells Render what to ignore (node_modules, etc.) |
 
 ---
 
