@@ -62,7 +62,6 @@ class SpraySimulation {
     if (!this.isRunning) return;
 
     const positions = this.particleSystem.geometry.attributes.position.array;
-    let activeCount = 0;
 
     // Emit new particles
     if (this.isRunning) {

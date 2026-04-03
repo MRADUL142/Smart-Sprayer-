@@ -163,10 +163,11 @@ const PlantScene = ({ diseaseData, isSprayingEnabled, selectedDisease }) => {
     animate();
 
     return () => {
+      const container = containerRef.current;
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
-      if (containerRef.current && renderer.domElement.parentNode === containerRef.current) {
-        containerRef.current.removeChild(renderer.domElement);
+      if (container && renderer.domElement.parentNode === container) {
+        container.removeChild(renderer.domElement);
       }
       renderer.dispose();
     };
