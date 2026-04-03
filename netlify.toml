@@ -1,0 +1,4 @@
+[build]
+  base = "smart-sprayer/frontend"
+  command = "npm run build"
+  publish = "build"
