@@ -19,7 +19,9 @@ const ImageUpload = ({ onDiseaseDetected, onPesticidesReceived }) => {
     // Upload
     setIsLoading(true);
     try {
+      console.log('Starting image upload:', file.name);
       const result = await apiService.detectDisease(file);
+      console.log('Received result:', result);
       onDiseaseDetected(result);
       
       // Fetch pesticides
@@ -28,7 +30,8 @@ const ImageUpload = ({ onDiseaseDetected, onPesticidesReceived }) => {
       
       toast.success('Disease detected! Check recommendations.');
     } catch (error) {
-      toast.error('Error detecting disease: ' + error.message);
+      console.error('Full error:', error);
+      toast.error('❌ Error: ' + (error.message || error.toString()));
     } finally {
       setIsLoading(false);
     }
