@@ -1,0 +1,55 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Build outputs
+.vercel
+build/
+dist/
+node_modules/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.pytest_cache/
+.coverage
+
+# Local database files (will be created fresh on Vercel)
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Documentation
+*.md
+docs/
+
+# Project specific
+smart_sprayer.db
+run.bat
+run.ps1
+start_app.py
+start_full_stack.bat
+start_full_stack.sh
+seed.py
+.renderignore
+Procfile

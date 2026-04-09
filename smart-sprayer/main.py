@@ -21,8 +21,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Create database tables
-Base.metadata.create_all(bind=engine)
-logger.info("Database tables created successfully")
+try:
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database tables created successfully")
+except Exception as e:
+    logger.warning(f"Could not create database tables: {e}")
+    logger.info("Application will continue, but database operations may fail")
+
 
 app = FastAPI(title="Smart Sprayer", description="Plant disease detection and pesticide recommendation system")
 
